@@ -33,8 +33,6 @@ public class PhotoPreview extends View implements ImageDelegate.Callback {
 
 
         Log.e(TAG,"initialize before ScaleType");
-        mImageDelegate.setScaleType(ScaleType.valueOf(
-                a.getInt(R.styleable.IntensifyImageView_scaleType, ScaleType.FIT_CENTER.nativeInt)));
         mImageDelegate.setMinimumScale(
                 a.getFloat(R.styleable.IntensifyImageView_minimumScale, 0f));
 
