@@ -2,9 +2,12 @@ package android.bignerdranch.photopreview;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
+import android.widget.OverScroller;
 
 import androidx.annotation.Nullable;
 
@@ -12,6 +15,14 @@ public class PhotoPreview extends View implements ImageDelegate.Callback {
     private static final String TAG = "PhotoPreview";
 
     ImageDelegate mImageDelegate ;
+
+    private Paint mPaint;
+
+    private Paint mTextPaint;
+
+    private Paint mBoardPaint;
+    private OverScroller mScroller;
+
 
     public PhotoPreview(Context context) {
         this(context, null, 0);
@@ -29,19 +40,26 @@ public class PhotoPreview extends View implements ImageDelegate.Callback {
 
     private void initialize(Context context, AttributeSet attrs, int defStyleAttr){
         mImageDelegate = new ImageDelegate(getResources().getDisplayMetrics(), this);
-        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.IntensifyImageView);
 
+        mPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG);
+        mPaint.setColor(Color.GREEN);
+        mPaint.setStrokeWidth(1f);
+        mPaint.setStyle(Paint.Style.STROKE);
 
-        Log.e(TAG,"initialize before ScaleType");
-        mImageDelegate.setMinimumScale(
-                a.getFloat(R.styleable.IntensifyImageView_minimumScale, 0f));
+        //debug画框
+        mTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG);
+        mTextPaint.setColor(Color.GREEN);
+        mTextPaint.setStrokeWidth(1f);
+        mTextPaint.setStyle(Paint.Style.FILL);
+        mTextPaint.setTextSize(24);
 
-        mImageDelegate.setMaximumScale(
-                a.getFloat(R.styleable.IntensifyImageView_maximumScale, Float.MAX_VALUE));
+        mBoardPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG);
+        mBoardPaint.setColor(Color.RED);
+        mBoardPaint.setStrokeWidth(2f);
+        mBoardPaint.setStyle(Paint.Style.STROKE);
 
-        mImageDelegate.setScale(a.getFloat(R.styleable.IntensifyImageView_scale, -1f));
-
-        a.recycle();
+        new GestureDetector(this);
+        mScroller = new OverScroller(context);
     }
 
 
@@ -50,11 +68,6 @@ public class PhotoPreview extends View implements ImageDelegate.Callback {
     @Override
     public void onRequestInvalidate() {
 
-    }
-
-    @Override
-    public boolean onRequestAwakenScrollBars() {
-        return false;
     }
 
     @Override

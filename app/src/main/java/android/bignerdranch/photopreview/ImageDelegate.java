@@ -31,7 +31,9 @@ public class ImageDelegate {
     private PhotoPreviewHandler mHandler;
     private State mState = State.NONE;
     private Image mImage;
-
+    private float mMinimumScale = 0f;
+    private float mMaximumScale = Float.MAX_VALUE;
+    private float mTempScale = 1f;
 
     public ImageDelegate(DisplayMetrics metrics, Callback callback) {
         mDisplayMetrics = metrics;
@@ -87,15 +89,12 @@ public class ImageDelegate {
     }
 
 
-
-    public void setMinimumScale(float minimumScale) {
-        if (minimumScale <= mMaximumScale) {
-            mMinimumScale = minimumScale;
-            if (mState.ordinal() > State.INIT.ordinal()) {
-                mState = State.INIT;
-                requestInvalidate();
-                requestAwakenScrollBars();
-            }
+    public void setScale(float scale) {
+        if (scale < 0.0f) return;
+        mTempScale = scale;
+        if (mState.ordinal() > State.INIT.ordinal()) {
+            mState = State.INIT;
+            requestInvalidate();
         }
     }
 
@@ -104,9 +103,6 @@ public class ImageDelegate {
     //Delegate会调用view的这些函数
     public interface Callback {
         void onRequestInvalidate();
-
-        boolean onRequestAwakenScrollBars();
-
         void onScaleChange(float scale);
     }
 
