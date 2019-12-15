@@ -2,8 +2,11 @@ package android.bignerdranch.photopreview;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
@@ -11,8 +14,12 @@ import android.widget.OverScroller;
 
 import androidx.annotation.Nullable;
 
+import java.util.List;
+import android.bignerdranch.photopreview.ImageDelegate.ImageDrawable;
+
 public class PhotoPreview extends View implements ImageDelegate.Callback {
     private static final String TAG = "PhotoPreview";
+    private static final boolean DEBUG = true;
 
     ImageDelegate mImageDelegate ;
 
@@ -22,6 +29,10 @@ public class PhotoPreview extends View implements ImageDelegate.Callback {
 
     private Paint mBoardPaint;
     private OverScroller mScroller;
+
+    //绘制区域
+    private volatile Rect mDrawingRect = new Rect();
+    private ImageDelegate mDelegate;
 
 
     public PhotoPreview(Context context) {
@@ -62,6 +73,38 @@ public class PhotoPreview extends View implements ImageDelegate.Callback {
         mScroller = new OverScroller(context);
     }
 
+    @Override
+    protected void onDraw(Canvas canvas) {
+        getDrawingRect(mDrawingRect);
+
+        List<ImageDrawable> drawables = mDelegate.obtainImageDrawables(mDrawingRect);
+
+        Log.e(TAG,"List<ImageDrawable>"+drawables.size());
+
+        int save = canvas.save();
+        int i = 0;
+        for (ImageDrawable drawable : drawables) {
+            if (drawable == null || drawable.mBitmap.isRecycled()) {
+                continue;
+            }
+            canvas.drawBitmap(drawable.mBitmap, drawable.mSrc, drawable.mDst, mPaint);
+            if (DEBUG) {
+                canvas.drawRect(drawable.mDst, mPaint);
+                canvas.drawText(String.valueOf(++i), drawable.mDst.left + 4,
+                        drawable.mDst.top + mTextPaint.getTextSize(), mTextPaint);
+            }
+        }
+        if (DEBUG) {
+            canvas.drawRect(mDrawingRect, mBoardPaint);
+            canvas.drawRect(mDelegate.getImageArea(), mBoardPaint);
+        }
+
+        canvas.restoreToCount(save);
+    }
+
+
+
+
 
 
     //Delegate调用view的这些函数
@@ -74,4 +117,9 @@ public class PhotoPreview extends View implements ImageDelegate.Callback {
     public void onScaleChange(float scale) {
 
     }
+
+
+
+
+
 }
