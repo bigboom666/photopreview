@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <item android:id="@+id/next"
+        android:title="next"/>
+    <item android:id="@+id/prew"
+        android:title="prew"/>
+</menu>
