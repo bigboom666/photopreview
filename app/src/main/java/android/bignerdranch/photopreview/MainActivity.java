@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
     ZoomImageView zoomImageView;
     private static int PictureNum = 9;
     private static int currentPicture = 0;
-
+    Bitmap target;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,14 +58,16 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         Bitmap bitmap1 = BitmapFactory.decodeStream(fis);
-        Bitmap bitmap3 = zoomBitmap(bitmap1,1080,960);
+        Bitmap bitmap = zoomBitmap(bitmap1,1080,960);
         Bitmap bitmap2 = scaleBitmap(bitmap1,100,200);
-        Bitmap bitmap = getDecodeBitmap(fis,1080,960);
+        //Bitmap bitmap = getDecodeBitmap(fis,1080,960);
 
         if (bitmap == null) {
             Log.d(TAG, "bitmap is null ");
         }
-        zoomImageView.setSourceImageBitmap(bitmap, getApplicationContext());
+        target = Bitmap.createBitmap(bitmap.getWidth() ,bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+        Bitmap bitmapDisplay =  createRoundConnerImage(bitmap,100f);
+        zoomImageView.setSourceImageBitmap(bitmapDisplay, getApplicationContext());
         //zoomImageView.setSourceBitmap(bitmap);
 
 
@@ -89,13 +91,14 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         Bitmap bitmap1 = BitmapFactory.decodeStream(fis);
-        Bitmap bitmap3 = zoomBitmap(bitmap1,1080,960);
+        Bitmap bitmap = zoomBitmap(bitmap1,1080,960);
         Bitmap bitmap2 = scaleBitmap(bitmap1,100,200);
-        Bitmap bitmap = getDecodeBitmap(fis,1080,960);
+        //Bitmap bitmap = getDecodeBitmap(fis,1080,960);
         if (bitmap == null) {
             Log.d(TAG, "bitmap is null ");
         }
-        zoomImageView.setSourceImageBitmap(bitmap, getApplicationContext());
+        Bitmap bitmapDisplay =  createRoundConnerImage(bitmap,100f);
+        zoomImageView.setSourceImageBitmap(bitmapDisplay, getApplicationContext());
         //zoomImageView.setSourceBitmap(bitmap);
     }
 
@@ -234,7 +237,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private Bitmap createRoundConnerImage(Bitmap source, float radius) {
-        Bitmap target=source;
+
         if (source == null) {
             return null;
         }
