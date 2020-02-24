@@ -4,9 +4,11 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -50,8 +52,9 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         Bitmap bitmap1 = BitmapFactory.decodeStream(fis);
-        Bitmap bitmap = zoomBitmap(bitmap1,1080,960);
+        Bitmap bitmap3 = zoomBitmap(bitmap1,1080,960);
         Bitmap bitmap2 = scaleBitmap(bitmap1,100,200);
+        Bitmap bitmap = getDecodeBitmap(fis,1080,960);
 
         if (bitmap == null) {
             Log.d(TAG, "bitmap is null ");
@@ -80,8 +83,9 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         Bitmap bitmap1 = BitmapFactory.decodeStream(fis);
-        Bitmap bitmap = zoomBitmap(bitmap1,1080,960);
+        Bitmap bitmap3 = zoomBitmap(bitmap1,1080,960);
         Bitmap bitmap2 = scaleBitmap(bitmap1,100,200);
+        Bitmap bitmap = getDecodeBitmap(fis,1080,960);
         if (bitmap == null) {
             Log.d(TAG, "bitmap is null ");
         }
@@ -228,7 +232,77 @@ public class MainActivity extends AppCompatActivity {
         return newbmp;
     }
 
+    private Bitmap createRoundConnerImage(Bitmap sourcce, float radius) {
+        if(sourcce==null){return null;}
+        Rect rpund
+    }
 
+    /**
+     * get decode bitMap
+     * @param resources
+     * @param resId the bitmap id
+     * @param reqWidth the loading view width
+     * @param reqHeight the loading view height
+     * @return decode bitmap
+     */
+    private Bitmap getDecodeBitmap(Resources resources, int resId, int reqWidth, int reqHeight){
+
+        //创建option
+        BitmapFactory.Options option =new BitmapFactory.Options();
+        //加载原图，计算原图宽/高
+        option.inJustDecodeBounds = true;
+        BitmapFactory.decodeResource(resources,resId,option);
+
+        //计算SampleSize
+        option.inSampleSize = getCalculateInSampleSize(reqWidth, reqHeight, option);
+
+        return BitmapFactory.decodeResource(resources,resId,option);
+    }
+
+
+
+    private Bitmap getDecodeBitmap(InputStream fis,  int reqWidth, int reqHeight){
+
+        //创建option
+        BitmapFactory.Options option =new BitmapFactory.Options();
+        //加载原图，计算原图宽/高
+        option.inJustDecodeBounds = true;
+        BitmapFactory.decodeStream(fis,null,option);
+
+        //计算SampleSize
+        option.inSampleSize = getCalculateInSampleSize(reqWidth, reqHeight, option);
+        option.inJustDecodeBounds = false;
+        return BitmapFactory.decodeStream(fis,null,option);
+    }
+
+
+
+
+
+    /**
+     * Calculate inSampleSize
+     * @param reqWidth the loading view width
+     * @param reqHeight the loading view Height
+     * @param option BitmapFactory of Option
+     * @return the BitmapFactory of Option's InSampleSize
+     */
+    private int getCalculateInSampleSize(int reqWidth, int reqHeight, BitmapFactory.Options option) {
+
+        int height = option.outHeight;
+        int width = option.outWidth;
+        int sampleSize = 1;
+
+        if(height > reqHeight || width > reqWidth){
+
+            int halfHeight = height/2;
+            int halfWidth = width/2;
+            while(halfHeight/sampleSize > reqHeight || halfWidth/sampleSize > halfWidth){
+                sampleSize *= 2;
+            }
+        }
+
+        return sampleSize;
+    }
 
 
 }
