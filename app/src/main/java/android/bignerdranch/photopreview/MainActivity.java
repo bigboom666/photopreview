@@ -7,8 +7,14 @@ import androidx.appcompat.widget.Toolbar;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Matrix;
+import android.graphics.Paint;
+import android.graphics.PaintFlagsDrawFilter;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -188,12 +194,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     /**
-     * 按宽/高缩放图片到指定大小并进行裁剪得到中间部分图片 <br>
-     * 方 法 名：zoomBitmap <br>
-     * 创 建 人： <br>
-     * 创建时间：2016-6-7 下午12:02:52 <br>
-     * 修 改 人： <br>
-     * 修改日期： <br>
+     * 按宽/高缩放图片到指定大小并进行裁剪得到中间部分图片
      * @param bitmap 源bitmap
      * @param w 缩放后指定的宽度
      * @param h 缩放后指定的高度
@@ -232,9 +233,22 @@ public class MainActivity extends AppCompatActivity {
         return newbmp;
     }
 
-    private Bitmap createRoundConnerImage(Bitmap sourcce, float radius) {
-        if(sourcce==null){return null;}
-        Rect rpund
+    private Bitmap createRoundConnerImage(Bitmap source, float radius) {
+        Bitmap target=source;
+        if (source == null) {
+            return null;
+        }
+
+        RectF roundRectF = new RectF(0, 0, source.getWidth(), source.getHeight());
+        Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        paint.setDither(true);
+        Canvas canvas = new Canvas(target);
+        canvas.setDrawFilter(new PaintFlagsDrawFilter(0, Paint.FILTER_BITMAP_FLAG));
+        canvas.drawRoundRect(roundRectF, radius , radius , paint);
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+        canvas.drawBitmap(source, 0, 0, paint);
+        paint.setXfermode(null);
+        return target;
     }
 
     /**
