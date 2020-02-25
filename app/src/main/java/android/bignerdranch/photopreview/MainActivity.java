@@ -32,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String PIC_DIR = "pictures";
     ZoomImageView zoomImageView;
     private static int PictureNum = 9;
-    private static int currentPicture = 0;
+    private static int currentPicture = 1;
     Bitmap target;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,15 +58,15 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         Bitmap bitmap1 = BitmapFactory.decodeStream(fis);
-        Bitmap bitmap = zoomBitmap(bitmap1,1080,960);
-        Bitmap bitmap2 = scaleBitmap(bitmap1,100,200);
+        Bitmap bitmap = zoomBitmap(bitmap1,500,50);
+        Bitmap bitmap2 = scaleBitmap(bitmap1,540,1080);
         //Bitmap bitmap = getDecodeBitmap(fis,1080,960);
 
         if (bitmap == null) {
             Log.d(TAG, "bitmap is null ");
         }
-        target = Bitmap.createBitmap(bitmap.getWidth() ,bitmap.getHeight(), Bitmap.Config.ARGB_8888);
-        Bitmap bitmapDisplay =  createRoundConnerImage(bitmap,100f);
+       // target = Bitmap.createBitmap(bitmap.getWidth() ,bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+        Bitmap bitmapDisplay =  getRoundedCornerBitmap(bitmap,100f); //getRoundedCornerBitmap  createRoundConnerImage
         zoomImageView.setSourceImageBitmap(bitmapDisplay, getApplicationContext());
         //zoomImageView.setSourceBitmap(bitmap);
 
@@ -91,13 +91,14 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         Bitmap bitmap1 = BitmapFactory.decodeStream(fis);
-        Bitmap bitmap = zoomBitmap(bitmap1,1080,960);
-        Bitmap bitmap2 = scaleBitmap(bitmap1,100,200);
+        Bitmap bitmap = zoomBitmap(bitmap1,500,50);
+        Bitmap bitmap2 = scaleBitmap(bitmap1,540,1080);
         //Bitmap bitmap = getDecodeBitmap(fis,1080,960);
         if (bitmap == null) {
             Log.d(TAG, "bitmap is null ");
         }
-        Bitmap bitmapDisplay =  createRoundConnerImage(bitmap,100f);
+        // target = Bitmap.createBitmap(bitmap.getWidth() ,bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+        Bitmap bitmapDisplay =  getRoundedCornerBitmap(bitmap,100f); //getRoundedCornerBitmap  createRoundConnerImage
         zoomImageView.setSourceImageBitmap(bitmapDisplay, getApplicationContext());
         //zoomImageView.setSourceBitmap(bitmap);
     }
@@ -140,6 +141,7 @@ public class MainActivity extends AppCompatActivity {
         float height = bitmap.getHeight();
         float x = 0,y = 0,scaleWidth = width,scaleHeight = height;
         Bitmap newbmp;
+
         //Log.e("gacmy","width:"+width+" height:"+height);
         if(w > h){//比例宽度大于高度的情况
             float scale = w/h;
@@ -246,6 +248,7 @@ public class MainActivity extends AppCompatActivity {
         Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
         paint.setDither(true);
         Canvas canvas = new Canvas(target);
+
         canvas.setDrawFilter(new PaintFlagsDrawFilter(0, Paint.FILTER_BITMAP_FLAG));
         canvas.drawRoundRect(roundRectF, radius , radius , paint);
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
@@ -254,7 +257,28 @@ public class MainActivity extends AppCompatActivity {
         return target;
     }
 
+    //获得圆角图片的方法
+    public static Bitmap getRoundedCornerBitmap(Bitmap source,float radius){
 
+        Bitmap output = Bitmap.createBitmap(source.getWidth(), source
+                .getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(output);
+
+        Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        paint.setDither(true);
+        paint.setAntiAlias(true);
+
+        final Rect rect = new Rect(0, 0, source.getWidth(), source.getHeight());
+        final RectF rectF = new RectF(rect);
+
+
+        canvas.drawRoundRect(rectF, radius, radius, paint);
+
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+        canvas.drawBitmap(source, rect, rect, paint);
+
+        return output;
+    }
 
 
     //----------------------------------------------------------------------------------------------
