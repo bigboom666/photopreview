@@ -251,6 +251,12 @@ public class MainActivity extends AppCompatActivity {
         return target;
     }
 
+
+
+
+    //----------------------------------------------------------------------------------------------
+
+
     /**
      * get decode bitMap
      * @param resources
